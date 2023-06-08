@@ -40,17 +40,22 @@ const onSearchFotoButton = async event => {
       else if (data.hits.length <= 40) {
         Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
          ref.loadMore.style.display = 'flex' ;
-        ref.gallery.innerHTML = creadGalleryCard(data.hits)
-         gallery.refresh()
-        console.log(data.hits);
+        ref.gallery.innerHTML = creadGalleryCard(data.hits);
+
+        gallery.refresh()
       }
       else {
         Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
         ref.loadMore.style.display = 'none';
         ref.gallery.innerHTML = creadGalleryCard(data.hits)
+        console.log(creadGalleryCard(data.hits));
     gallery.refresh()
-      } 
-     
+   }
+   const totalLoaded = data.hits.length;
+     if (totalLoaded >= data.totalHits) {
+        ref.loadMore.style.display = 'none';
+        Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
+      }
     }catch(error){console.log(error)}
     
    
@@ -61,22 +66,29 @@ const onloadMoreCard = async event => {
   event.preventDefault();
   galleryCard.page += 1;
 
- try{
-   const { data } =  await galleryCard.getGalleryURL();
-   
-      if (data.hits.length === 0) {
-        ref.loadMore.style.display = 'none';
-        Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
-      }
-      else {
-        ref.gallery.insertAdjacentHTML('beforeend', creadGalleryCard(data.hits))
-      
-   } gallery.refresh();
+  try {
+    const { data } = await galleryCard.getGalleryURL();
 
+    if (data.hits.length === 0) {
+      ref.loadMore.style.display = 'none';
+      Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
+    } else {
+      ref.gallery.insertAdjacentHTML('beforeend', creadGalleryCard(data.hits));
+    }
 
-    } catch(error) { console.log(error);}
-  
+    const totalLoaded = galleryCard.page * galleryCard.per_page;
+    if (totalLoaded >= data.totalHits) {
+      ref.loadMore.style.display = 'none';
+      Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+  gallery.refresh();
 };
 
 ref.form.addEventListener('submit', onSearchFotoButton);
 ref.loadMore.addEventListener('click', onloadMoreCard);
+
+

@@ -5,7 +5,7 @@ import axios from 'axios';
 
   constructor() {
     this.page = 1;
-    this.per_page = null;
+    this.per_page = 40;
     this.q = null;
   }
 
@@ -17,8 +17,11 @@ import axios from 'axios';
       orientation: "horizontal",
       safesearch: true,
       key: GetGalleryCard.FOTO_API,
-      page: this.page 
+      page: this.page,
+      per_page:this.per_page
     });
-    return axios.get(`${GetGalleryCard.FOTO_URL}?${searchParams}`);
+      
+      return axios.get(`${GetGalleryCard.FOTO_URL}?${searchParams}`);
+      
   }
 }
